@@ -1,112 +1,125 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import Slider from '@react-native-community/slider';
+import Clipboard from '@react-native-clipboard/clipboard';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+let charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+let lengthCharset = charset.length;
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  const [password, setPassword] = useState('');
+  const [size, setSize] = useState(8);
+
+  const generatePassword = () => {
+    let passwordRandom = '';
+    let countToSize = 0;
+
+    while (countToSize < size) {
+      let characterIndex = Math.floor(Math.random() * lengthCharset);
+
+      passwordRandom += charset.charAt(characterIndex);
+      countToSize++;
+    }
+
+    setPassword(passwordRandom);
+  }
+
+  const copyPassword = () => {
+    Clipboard.setString(password);
+    alert('Senha copiada com sucesso!');
+  }
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.container}>
+
+      <Image
+        source={require('./src/assets/logo.png')}
+        style={styles.logo}
+      />
+
+      <Text style={styles.txSizePassword}>{`${size} caracteres`}</Text>
+
+      <View style={styles.area}>
+        <Slider
+          style={styles.sizePassword}
+          minimumValue={8}
+          maximumValue={20}
+          minimumTrackTintColor="#ff0000"
+          maximumTrackTintColor="#000"
+          onValueChange={value => setSize(value.toFixed(0))}
+        />
+      </View>
+
+      <TouchableOpacity style={styles.bntPassword} onPress={generatePassword}>
+        <Text style={styles.txButtonPassword}>Gerar Senha</Text>
+      </TouchableOpacity>
+
+      {password !== '' && (
+        <View style={styles.area}>
+          <Text style={styles.password} onLongPress={copyPassword}>{password}</Text>
+        </View>
+      )}
+
+
     </View>
   );
-};
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+}
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f3f3ff'
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+
+  logo: {
+    marginBottom: 10
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+
+  txSizePassword: {
+    fontSize: 30,
+    fontWeight: 'bold'
   },
-  highlight: {
-    fontWeight: '700',
+
+  area: {
+    marginTop: 15,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    width: '80%',
+    height: 50,
+    borderRadius: 7
   },
+
+  bntPassword: {
+    backgroundColor: '#ffa200',
+    width: '80%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 7,
+    marginBottom: 25
+
+  },
+
+  txButtonPassword: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff'
+  },
+
+  password: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  }
+
+
+
 });
+
 
 export default App;
