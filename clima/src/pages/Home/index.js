@@ -1,6 +1,7 @@
 
-import React from 'react';
-import { SafeAreaView, StyleSheet, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, FlatList, PermissionsAndroid } from 'react-native';
+import Geolocation from '@react-native-community/geolocation';
 
 import Menu from '../../components/Menu';
 import Header from '../../components/Header';
@@ -91,6 +92,48 @@ const mylist = [
 ]
 
 const Home = () => {
+
+  useEffect(() => {
+
+    /**  Verificação de sistema operacional */
+    if (Platform.OS === 'ios') {
+      getLocation();
+
+    } else {
+
+      /** Solicitar e validar permissão para localização */
+      (async () => {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: "Permissão de Acesso à Localização",
+            message: "Este aplicativo precisa acessar a sua localização",
+            buttonNeutral: "Pergunte-me depois",
+            buttonNegative: "Cancelar",
+            buttonPositive: "OK"
+          }
+        );
+
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          alert("Permissão de Localização negada");
+        } else {
+          getLocation();
+        }
+      })();
+
+    }
+
+    const getLocation = async () => {
+      Geolocation.getCurrentPosition(async ({ coords }) => {
+        const { latitude, longitude } = coords;
+        console.log(latitude, longitude);
+
+      }, error => console.log(error.code, error.message), { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 });
+    }
+
+  }, []);
+
+
   return (
     <SafeAreaView style={styles.container}>
 
@@ -105,7 +148,7 @@ const Home = () => {
         contentContainerStyle={{ paddingBottom: '5%' }}
         style={styles.list}
         data={mylist}
-        keyExtractor={item => item.data}
+        keyExtractor={item => item.date}
         renderItem={({ item }) => <Forecast data={item} />}
       />
 
