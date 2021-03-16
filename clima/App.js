@@ -6,8 +6,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import Routes from './src/routes'
 
 // https://api.hgbrasil.com/weather?key=a973bdd3
-// https://api.hgbrasil.com/weather?key=a973bdd3&lat=-23.682&lon=-46.875
-// https://api.hgbrasil.com/weather?key=a973bdd3&city_name=Campinas,SP
+
+// https://api.hgbrasil.com/
 
 const App = () => {
   return (

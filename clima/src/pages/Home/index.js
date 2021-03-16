@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, FlatList, PermissionsAndroid } from 'react-native';
+import { SafeAreaView, StyleSheet, FlatList, PermissionsAndroid, View } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 
 import Menu from '../../components/Menu';
@@ -8,96 +8,24 @@ import Header from '../../components/Header';
 import Conditions from '../../components/Conditions';
 import Forecast from '../../components/Forecast'
 
-const mylist = [
-  {
-    "date": "13/03",
-    "weekday": "Sáb",
-    "max": 26,
-    "min": 18,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "14/03",
-    "weekday": "Dom",
-    "max": 27,
-    "min": 17,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "15/03",
-    "weekday": "Seg",
-    "max": 27,
-    "min": 18,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "16/03",
-    "weekday": "Ter",
-    "max": 27,
-    "min": 18,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "17/03",
-    "weekday": "Qua",
-    "max": 28,
-    "min": 17,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "18/03",
-    "weekday": "Qui",
-    "max": 26,
-    "min": 18,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "19/03",
-    "weekday": "Sex",
-    "max": 24,
-    "min": 18,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "20/03",
-    "weekday": "Sáb",
-    "max": 26,
-    "min": 19,
-    "description": "Tempestades",
-    "condition": "storm"
-  },
-  {
-    "date": "21/03",
-    "weekday": "Dom",
-    "max": 26,
-    "min": 18,
-    "description": "Tempestades isoladas",
-    "condition": "storm"
-  },
-  {
-    "date": "22/03",
-    "weekday": "Seg",
-    "max": 27,
-    "min": 19,
-    "description": "Tempo nublado",
-    "condition": "cloud"
-  }
-]
+import api, { key } from '../../services/api';
+import getCondition from '../../utils/conditions';
+
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [icon, setIcon] = useState(null);
+  const [background, setBackground] = useState(null);
+  const [forecast, setForecast] = useState(null);
+
 
   useEffect(() => {
 
     /**  Verificação de sistema operacional */
     if (Platform.OS === 'ios') {
-      getLocation();
+      getLocalInformation();
 
     } else {
 
@@ -115,44 +43,64 @@ const Home = () => {
         );
 
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          alert("Permissão de Localização negada");
+          setErrorMsg('Permissão de Localização negada');
+          setLoading(false);
+          return;
         } else {
-          getLocation();
+          getLocalInformation();
         }
+
       })();
 
     }
 
-    const getLocation = async () => {
+    const getLocalInformation = async () => {
       Geolocation.getCurrentPosition(async ({ coords }) => {
         const { latitude, longitude } = coords;
-        console.log(latitude, longitude);
+        const { data } = await api.get(`https://api.hgbrasil.com/weather?key=${key}&lat=${latitude}&lon=${longitude}`);
+        setWeather(data.results);
 
       }, error => console.log(error.code, error.message), { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 });
+
     }
 
   }, []);
 
+  useEffect(() => { if (weather) setHome(weather) }, [weather]);
+
+  const setHome = (conditions) => {
+    let { currently, condition_slug, forecast } = conditions;
+    let gradient = currently == 'dia' ? ['#1ed6ff', '#97c1ff'] : ['#0c3741', '#0f2f61'];
+    let props = getCondition(condition_slug);
+
+    setBackground(gradient);
+    setIcon(props);
+    setForecast(forecast);
+
+  }
+
+  useEffect(() => {if (background && icon && forecast) setLoading(false)}, [icon, background])
 
   return (
-    <SafeAreaView style={styles.container}>
+    <>
+      {!loading && (
+        <SafeAreaView style={styles.container}>
+          <Menu />
+          <Header background={background} weather={weather} icon={icon} />
 
-      <Menu />
+          <Conditions weather={weather} />
 
-      <Header />
-
-      <Conditions />
-
-      <FlatList
-        horizontal={true}
-        contentContainerStyle={{ paddingBottom: '5%' }}
-        style={styles.list}
-        data={mylist}
-        keyExtractor={item => item.date}
-        renderItem={({ item }) => <Forecast data={item} />}
-      />
-
-    </SafeAreaView>
+          <FlatList
+            horizontal={true}
+            contentContainerStyle={{ paddingBottom: '5%' }}
+            style={styles.list}
+            data={forecast}
+            keyExtractor={item => item.date}
+            renderItem={({ item }) => <Forecast data={item} />}
+          />
+        </SafeAreaView>
+      )}
+    </>
   );
 }
 

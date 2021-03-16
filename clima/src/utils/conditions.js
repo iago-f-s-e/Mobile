@@ -1,79 +1,67 @@
-export function conditions(condition) {
-  switch (condition) {
-    case "storm":
-      return icon = {
-        name: 'cloud-showers-heavy',
-        color: '#a0a0a0'
-      };
-      break;
+const conditions = {
+  storm: {
+    name: 'cloud-showers-heavy',
+    color: '#a0a0a0'
+  },
 
-    case 'snow':
-      return icon = {
-        name: 'snowflake',
-        color: '#1ec9ff'
-      };
-      break;
+  snow: {
+    name: 'snowflake',
+    color: '#1ec9ff'
+  },
 
-    case 'hail':
-      return icon = {
-        name: 'cloud-showers-heavy',
-        color: '#1ec9ff'
-      };
-      break;
+  hail: {
+    name: 'cloud-showers-heavy',
+    color: '#1ec9ff'
+  },
 
-    case 'rain':
-      return icon = {
-        name: 'cloud-rain',
-        color: '#1ec9ff'
-      };
-      break;
+  rain: {
+    name: 'cloud-rain',
+    color: '#1ec9ff'
+  },
 
-    case 'fog':
-      return icon = {
-        name: 'cloud',
-        color: '#a0a0a0'
-      };
-      break;
+  fog: {
+    name: 'cloud',
+    color: '#a0a0a0'
+  },
 
-    case 'clear_day':
-      return icon = {
-        name: 'sun',
-        color: '#ffb300'
-      };
-      break;
+  clear_day: {
+    name: 'sun',
+    color: '#ffb300'
+  },
 
-    case 'clear_night':
-      return icon = {
-        name: 'moon',
-        color: '#a0a0a0'
-      };
-      break;
+  clear_night: {
+    name: 'moon',
+    color: '#a0a0a0'
+  },
 
-    case 'cloud':
-      return icon = {
-        name: 'cloud',
-        color: '#1ec9ff'
-      };
-      break;
+  cloud: {
+    name: 'cloud',
+    color: '#1ec9ff'
+  },
 
-    case 'cloudly_day':
-      return icon = {
-        name: 'cloud-sun',
-        color: '#1ec9ff'
-      };
-      break;
+  cloudly_day: {
+    name: 'cloud-sun',
+    color: '#1ec9ff'
+  },
 
-    case 'cloudly_night':
-      return icon = {
-        name: 'cloud-moon',
-        color: '#a0a0a0'
-      };
-      break;
+  cloudly_night: {
+    name: 'cloud-moon',
+    color: '#a0a0a0'
+  },
 
-    default:
-      return icon = {
-        name: 'cloud',
-        color: '#1ec9ff'
-      };
+  none_day: {
+    name: 'cloud',
+    color: '#1ec9ff'
+  },
+
+  none_night: {
+    name: 'cloud',
+    color: '#1ec9ff'
   }
 }
+
+const getCondition = (typeCondition) => {
+  return conditions[typeCondition];
+}
+
+export default getCondition;

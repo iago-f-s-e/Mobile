@@ -4,11 +4,11 @@ import { View, Text, StyleSheet } from 'react-native';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-import { conditions } from '../../utils/conditions'
+import getCondition from '../../utils/conditions'
 
 const Forecast = ({ data }) => {
   const { date, weekday, max, min, description, condition } = data;
-  let { name, color } = conditions(condition);
+  let { name, color } = getCondition(condition);
 
   return (
     <View style={styles.container}>

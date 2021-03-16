@@ -5,21 +5,21 @@ import { Text, StyleSheet } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const Header = () => {
+const Header = ({ background, weather, icon }) => {
   return (
-    <LinearGradient style={styles.header} colors={['#1ed6ff', '#97c1ff']}>
+    <LinearGradient style={styles.header} colors={background}>
 
-      <Text style={styles.date}>13/01/2021</Text>
-      <Text style={styles.city}>Euclides da Cunha</Text>
+      <Text style={styles.date}>{weather.date}</Text>
+      <Text style={styles.city}>{weather.city}</Text>
 
       <Icon
-        name="cloud-sun-rain"
+        name={icon.name}
+        color={icon.color}
         size={150}
-        color="#fff"
       />
 
       <Text style={styles.celsiu}>°C</Text>
-      <Text style={styles.temp}>30</Text>
+      <Text style={styles.temp}>{weather.temp}</Text>
 
     </LinearGradient>
   );
@@ -39,11 +39,11 @@ const styles = StyleSheet.create({
 
   date: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 17,
   },
 
   city: {
-    fontSize: 25,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 10
